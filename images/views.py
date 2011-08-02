@@ -97,7 +97,7 @@ def api(request,path):
           Please only call this method under development environment
           under deployment environment, url should be dispatched to api_server services directly
     '''
-    import urllib,urllib2,httplib2
+    import urllib,urllib2
     try:
         d = {}
         for k in request.GET:

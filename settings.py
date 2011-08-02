@@ -166,9 +166,9 @@ from mongoengine import connect
 connect(DB_NAME,host=DB_HOST,port=DB_PORT)
 
 # ximg diy settings
-IMG_SERVER = "http://i.ximg.in"
-APP_SERVER = "http://i.ximg.in"
-WEB_SERVER = "http://ximg.in/i"
+IMG_SERVER = "http://localhost:8888"
+APP_SERVER = "http://localhost:8888"
+WEB_SERVER = "http://localhost:8000"
 
 
 #registration

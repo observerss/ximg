@@ -24,7 +24,7 @@ def album(request,action,data=None):
         if action == "create":
             ids = json.loads( request.raw_post_data )
             album = Album()
-            if user.is_authenticated():
+            if request.user.is_authenticated():
                 album.user=request.user
             album.save()
             images = Image.objects.filter(uid__in=ids)
