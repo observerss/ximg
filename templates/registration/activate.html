@@ -1,0 +1,16 @@
+{% extends "pbase.html" %}
+{% load i18n %}
+
+    {% block main %}
+    <span class="graytitle">Activation Result</span>
+    <ul class="pageitem">
+        <li class="textbox">
+        {% if account %}
+        <p>{% trans "Account successfully activated" %}</p>
+        <p><a href="{% url auth_login %}">{% trans "Log in" %}</a></p>
+        {% else %}
+        <p>{% trans "Account activation failed" %}</p>
+        {% endif %}
+        </li>
+    </ul>
+    {% endblock %}

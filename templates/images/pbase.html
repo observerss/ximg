@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-type" content="text/html"; charset=utf-8">
+    <title>{% block title %}Ximg.in{% endblock %}</title>
+    <!-- <meta http-equiv="refresh" content="2">  -->
+    <link rel="stylesheet" href="/static/css/basic.css" type="text/css" />
+    <link rel="stylesheet" href="/static/css/black.css" type="text/css" />
+    <link rel="stylesheet" href="/static/css/jquery-ui-1.8.14.custom.css" type="text/css" />
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.zclip.min.js"></script>
+    <!--<script type="text/javascript" src="/static/js/json.js"></script>-->
+    {% block resource %}
+    {% endblock %}
+
+</head>
+
+<body>
+    <div id="page">
+        <div id="topbar">
+            <div class="left">
+                <ul>
+                    <li><a href="#">gallery</a></li>
+                    {% if user.is_authenticated %}
+                        <li>|</li>
+                        <li><a href="{% url images.views.list_album %}">albums</a></li>
+                        <li><a href="{% url images.views.list_image %}">images</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="right">
+                <ul>
+                {% if user.is_authenticated %}
+                    <li><a href="#">{{ user.username }}</a></li>
+                    <li>|</li>
+                    <li><a href="{% url registration.auth_views.logout %}">logout</a></li>
+                {% else %}
+                    <li><a href="{% url registration.auth_views.login %}">sign in</a></li>
+                    <li>|</li>
+                    <li><a href="{% url registration.views.register %}">register</a></li>
+                {% endif %}
+                </ul>
+            </div>
+        </div>
+        <div class="clear" id="underbar"></div>
+        {% block main %}{% endblock %}
+    </div>
+    <div id="footer">{% block footer %}&copy; 2011 ximg.in v0.01{% endblock %}</div>
+    <div id="script">{% block script %}{% endblock %}</div>
+</body>
+</html>
+

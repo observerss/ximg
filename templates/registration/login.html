@@ -1,0 +1,47 @@
+{% extends "pbase.html" %}
+{% load i18n %}
+
+    {% block main %}
+        <form method="post" action=".">{% csrf_token %}
+            <fieldset><span class="graytitle"><h2>Enter Login Information</h2></span>
+                <ul class="login-information">
+                    {% if form.non_field_errors %}
+                    <li class="textbox">{{ form.non_field_errors }}</li>
+                    {% endif %}
+
+                    <li class="smallfield">
+                        <span class="name">{% trans "Username" %}</span>
+                        <input name="username" placeholder="Username" type="text" />
+                    </li> 
+                    <li class="smallfield">
+                        <span class="name">{% trans "Password" %}</span>
+                        <input name="password" placeholder="Password" type="password" />
+                    </li> 
+                    <li class="button">
+                        <input type="submit" name="{% trans 'Log in' %}" value="{% trans 'Log in' %}" />
+                    </li>
+                </ul>
+
+                {% if next %}
+                <input type="hidden" name="next" value="{{ next }}" />
+                {% else %}
+                <input type="hidden" name="next" value="" />
+                {% endif %}
+            </fieldset>
+        </form>
+
+        <ul class="pageitem">
+            <li class="textbox">
+                <span class="header">
+                    {% trans "Forgot password?" %}<a href="{% url auth_password_reset %}">{% trans "Reset it!" %}</a>
+                </span>
+                <span class="header">
+                    {% trans "Not member" %}? <a href="{% url registration_register %}">{% trans "Register!" %}</a>
+                </span>
+            </li>
+        </ul>
+{% endblock %}
+
+{% block script %}
+    $("input :submit").button();
+{% endblock %}

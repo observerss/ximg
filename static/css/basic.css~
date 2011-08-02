@@ -1,0 +1,127 @@
+html, body {
+	margin:0;
+	padding:0;
+}
+body{
+	text-align: center;
+	font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Helvetica, Arial, sans-serif;
+	background-color: #eee;
+	color: #444;
+	font-size: 75%;
+}
+a{
+	color: #27D;
+	text-decoration: none;
+}
+a:focus, a:hover, a:active {
+	text-decoration: underline;
+}
+p, li {
+	line-height: 1.8em;
+}
+h1, h2 {
+	font-family: "Trebuchet MS", Verdana, sans-serif;
+	margin: 0 0 10px 0;
+	letter-spacing:-1px;
+}
+h1 {
+	padding: 0;
+	font-size: 3em;
+	color: #333;
+}
+h2 {
+	padding-top: 10px;
+	font-size:2em;
+}
+pre {
+	font-size: 1.2em;
+	line-height: 1.2em;
+	overflow-x: auto;
+}
+div#topbar {
+    background-color: #181817;
+    color: #FFFFFF;
+    font-family: Arial,sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    height: 28px;
+}
+.left{
+	float:left;
+}
+.right{
+	float:right;
+}
+#topbar ul {
+    margin: 1px 1px;
+    margin-left: -30px;
+    margin-right: 10px;
+}
+#topbar ul li {
+    display: inline;
+    list-style: none outside none;
+    padding: 5px 0;
+}
+div#underbar {
+    background-color: #444442;
+    border-bottom: 3px solid #2B2B2B;
+    border-top: 3px solid #2B2B2B;
+    height: 5px;
+}
+div#page {
+	width: 980px;
+	background-color: #fff;
+	margin: 0 auto;
+	text-align: left;
+	border-color: #ddd;
+	border-style: none solid solid;
+	border-width: medium 1px 1px;
+}
+div#container {
+	padding: 5px;
+}
+div#ads {
+	clear: both;
+	padding: 12px 0 12px 66px;
+}
+div#footer {
+	clear: both;
+	color: #777;
+	margin: 0 auto;
+	padding: 20px 0 40px;
+	text-align: center;
+}
+div.content{
+	background-color: #111;
+	border: 0;
+	padding: 0;
+	margin: 0;
+}
+div.upper-banner{
+   background-color: #000;
+   border-radius: 10px 10px 10px 10px;
+	margin: 5px;
+	padding: 0px 20px;
+	position: relative;
+}
+div.gallery {
+    float: left;
+    width: 520px;
+    margin: 0 auto;
+}
+div.upload {
+    float: right;
+    width: 360px;
+}
+
+#options {
+	margin: 15px 35px;
+	padding: 0;
+}
+div.panel {
+	background-color: #000000;
+   border-radius: 10px 10px 10px 10px;
+   margin: 5px;
+   padding: 5px 18px 18px 18px;
+   position: relative;
+}

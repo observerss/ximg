@@ -1,0 +1,50 @@
+{% extends "pbase.html" %}
+{% load i18n %}
+
+    {% block main %}
+        <form method="post" action=".">{% csrf_token %}
+            <fieldset><span class="graytitle"><h2>Your Information</h2></span>
+                <ul class="pageitem">
+                    {% if form.non_field_errors %}
+                    <li class="textbox">{{ form.non_field_errors }}</li>
+                    {% endif %}
+
+                    {% if form.username.errors %}
+                    <li class="textbox">{{ form.username.errors }}</li>
+                    {% endif %}
+                    <li class="smallfield">
+                        <span class="name">{% trans "Username" %}</span>
+                        <input name="username" placeholder="Username" type="text" class="required" maxlength="30" />
+                    </li> 
+
+                    {% if form.email.errors %}
+                    <li class="textbox">{{ form.email.errors }}</li>
+                    {% endif %}
+                    <li class="smallfield">
+                        <span class="name">{% trans "Email address" %}</span>
+                        <input name="email" placeholder="Email address" type="text" class="required" maxlength="75" />
+                    </li> 
+
+                    {% if form.password1.errors %}
+                    <li class="textbox">{{ form.password1.errors }}</li>
+                    {% endif %}
+                    <li class="smallfield">
+                        <span class="name">{% trans "Password" %}</span>
+                        <input name="password1" placeholder="Password" type="password" class="required" />
+                    </li> 
+
+                    {% if form.password2.errors %}
+                    <li class="textbox">{{ form.password2.errors }}</li>
+                    {% endif %}
+                    <li class="smallfield">
+                        <span class="name">{% trans "Password(again)" %}</span>
+                        <input name="password2" placeholder="Password" type="password" class="required" />
+                    </li> 
+                    <li class="button">
+                        <input type="submit" name="{% trans 'Submit' %}" value="{% trans 'Submit' %}" />
+                    </li>
+                </ul>
+
+            </fieldset>
+        </form>
+    {% endblock %}
