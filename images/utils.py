@@ -1,6 +1,8 @@
 import random
 import time
 import os
+import hashlib
+import base64
 
 #codebase = 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -61,3 +63,24 @@ def is_image(data):
         return False
     return True
 
+def diy_encode(data,codebase=None):
+    if not codebase:
+        codebase = 'lJcIfXzMvUjgoSaOHiK7qmPhDEGdTex1kyN8uYV4pZ59bn3RQwtBA2W0CL6rFs'
+    try:
+        dnum = int(data,16)
+        l = len(codebase)
+        s = []
+        while dnum > 0:
+            s.append(codebase[dnum%l])
+            dnum /= l
+    except Exception,what:
+        pass
+    return ''.join(s)
+
+def generate_delhash(uid):
+    md5 = hashlib.new("md5")
+    md5.update(str(random.random()))
+    salt = md5.hexdigest()[:6]
+    md5 = hashlib.new("md5")
+    md5.update(uid+salt)
+    return diy_encode(md5.hexdigest())

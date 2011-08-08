@@ -6,6 +6,7 @@ from datetime import datetime
 import os
 from settings import IMG_SERVER,APP_SERVER,WEB_SERVER
 import utils
+import hashlib
 
 
 class Tag(Document):
@@ -41,6 +42,7 @@ class Album(Document):
     disliked = IntField(default=0)
     tags = ListField(ReferenceField(Tag))
     comments = ListField(ReferenceField(Comment)) 
+    delhash = StringField(max_length=32)
     def __init__(self, *args, **kwargs):
         """Generate uid"""
         super(Album, self).__init__(*args, **kwargs) 
@@ -52,6 +54,7 @@ class Album(Document):
                     Album.objects.get(uid=self.uid)
                 except Album.DoesNotExist:
                     break
+            self.delhash = utils.generate_delhash(self.uid)
             self.save()
     def albumurl_medium(self):
         if self.images:
@@ -79,6 +82,7 @@ class Image(Document):
     user = ReferenceField(User)
     ip = StringField(max_length=16)
     public = BooleanField(default=True)
+    delhash = StringField(max_length=32)
     def __init__(self, *args, **kwargs):
         """Generate uid"""
         super(Image, self).__init__(*args, **kwargs) 
@@ -89,6 +93,7 @@ class Image(Document):
                     Image.objects.get(uid=self.uid)
                 except Image.DoesNotExist:
                     break
+            self.delhash = utils.generate_delhash(self.uid)
             self.save()
     def save(self, *args, **kwargs):
         """Save """

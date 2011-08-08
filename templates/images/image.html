@@ -18,7 +18,7 @@
         <div style="clear: both;"></div>
         <div class="content" style="float:left; height:{{ height }}px; width:550px;">
             <a href="{{ image.imageurl }}" style="text-align:center;display:block;">
-                <img src="{{ image.imageurl_original }}" title="{{ image.title }}" width="500px"/>
+                <img src="{{ image.imageurl_original }}" alt="Loading..." title="{{ image.title }}" width="500px"/>
             </a>
         </div>
         <div class="sidebar" style="float:left; height=500; width=400;">
@@ -27,7 +27,7 @@
                 {% for aurl,turl,title in urls %}
                     &nbsp;
                     <a href="{{ aurl }}">
-                        <img src="{{ turl }}" alt="album" title={{ title }} />
+                        <img src="{{ turl }}" alt="" title={{ title }} />
                     </a>
                     &nbsp;
                 {% endfor %}

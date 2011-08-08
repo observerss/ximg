@@ -168,7 +168,7 @@ connect(DB_NAME,host=DB_HOST,port=DB_PORT)
 # ximg diy settings
 IMG_SERVER = "http://localhost:8888"
 APP_SERVER = "http://localhost:8888"
-WEB_SERVER = "http://localhost:8000"
+WEB_SERVER = "http://localhost:8000/i"
 
 
 #registration
