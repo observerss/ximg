@@ -16,12 +16,6 @@
             <a href="/">
                 <img src="/static/logo-large.gif" alt="another image sharer">
             </a>
-            <div style="margin-bottom:10px;float:right;">
-                            <div class="button share">Share This Album</div>
-                            <script>
-                                $(".button").button();
-                            </script>
-            </div>
         </div>
         <div style="clear: both;"></div>
         <div class="navigation-container">
@@ -35,7 +29,8 @@
                             <img src="{{ img.imageurl_medium }}" alt=""  width="100px" />
                         </a>
                         <div class="caption">
-                            <div class="image-title">Title: {{ img.title }}</div>
+                            <div class="image-title" style="margin-bottom:10px" >Title: {{ img.title }}</div>
+                            <div class="button share">FB,RR,KX<a href="#">Share</a></div>
                             <div class="download"><a href="{{ img.imageurl }}">View Image</a></div>
                         </div>
                     </li>

@@ -86,13 +86,20 @@ class BaseHandler(tornado.web.RequestHandler):
 
 class AlbumHandler(BaseHandler):
     def post(self,action):
+        request = self.get_django_request()
         if action == "create":
-            request = self.get_django_request()
-            self.finish(api_class.album(request,action))
+            self.write(api_class.album(request,action))
+        elif action.startswith("delete"):
+            try:
+                action,args = action.split("_")
+            except:
+                args = None
+            self.write(api_class.album(request,action,args))
 
 class ImageHandler(BaseHandler):#tornado.web.RequestHandler):
     @tornado.web.asynchronous
     def post(self,action):
+        request = self.get_django_request()
         if action == "weblink":
             self.action = action
             self.links = json.loads( self.request.body )
@@ -103,8 +110,8 @@ class ImageHandler(BaseHandler):#tornado.web.RequestHandler):
             else:
                 self.finish({"status":"failed","reason":"invalid request syntax"})
         elif action == "upload":
-            request = self.get_django_request()
-            user = self.get_current_user()
+            self.finish(api_class.image(request,action))
+        elif action == "delete":
             self.finish(api_class.image(request,action))
 
     def on_response(self,response):
@@ -188,7 +195,6 @@ class RootHandler(BaseHandler):
             if_since = datetime.datetime.fromtimestamp(time.mktime(date_tuple))
             d = self.f.upload_date
             last_modified = datetime.datetime(d.year,d.month,d.day,d.hour,d.minute,d.second)
-            print if_since,last_modified
             if if_since >= last_modified:
                 self.set_status(304)
                 self.finish()

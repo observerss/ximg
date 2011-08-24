@@ -21,11 +21,21 @@ def delete_image(uid,delhash):
     try:
         im = Image.objects.get(uid=uid)
         if delhash and im.delhash == delhash:
+            # delete image from album and delete album if empty
+            try:
+                for a in im.albums:
+                    a.images.remove(im)
+                    a.save()
+                    if not a.images:
+                        a.delete()
+            except Exception,what:
+                print repr(what)
             im.delete()
-        return True
+            return True,"Succeeded"
+        else:
+            return False,"Delhash does not match"
     except Exception,what:
-        print repr(what)
-        return False
+        return False,repr(what)
 
 def append_image_to_album(image_info,album_info):
     i_uid,i_delhash = image_info
@@ -36,12 +46,13 @@ def append_image_to_album(image_info,album_info):
         if im.delhash == i_delhash and alb.delhash == a_delhash:
             im.albums.append(alb)
             al.images.append(im)
-            return True
+            im.save()
+            al.save()
+            return True,"Succeeded"
         else:
-            return False
+            return False,"Delhash does not match"
     except Exception,what:
-        print repr(what)
-        return False
+        return False,repr(what)
 
 def remove_image_from_album(image_info,album_info):
     i_uid,i_delhash = image_info
@@ -52,14 +63,15 @@ def remove_image_from_album(image_info,album_info):
         if im.delhash == i_delhash and alb.delhash == a_delhash:
             im.albums.remove(alb)
             al.images.remove(im)
-            return True
+            im.save()
+            al.save()
+            return True,"Succeeded"
         else:
-            return False
+            return False,"Delhash does not match"
     except Exception,what:
-        print repr(what)
-        return False
+        return False,repr(what)
 
-def album(request,action,data=None):
+def album(request,action,args=None):
     response = {"status":"403","reason":"undefined operation"}
     try:
         if action == "create":
@@ -89,20 +101,26 @@ def album(request,action,data=None):
                 try:
                     alb = Album.objects.get(uid=uid)
                     if alb.delhash == delhash:
-                        ims = alb.images
-                        for im in ims:
-                            try:
-                                im.delete()
-                                #delete_image(im.uid,im.delhash)
-                            except Exception,what:
-                                #in case there're invalid references
-                                print repr(what)
+                        if args == "all":
+                            ims = alb.images
+                            for im in ims:
+                                try:
+                                    im.delete()
+                                except Exception,what:
+                                    #in case there're invalid references
+                                    print repr(what)
+                        else:
+                            for im in alb.images:
+                                try:
+                                    im.albums.remove(alb)
+                                    im.save()
+                                except:
+                                    pass
                         alb.delete()
-                        response["success"].append( (True,None) )
+                        response["success"].append( (True,"Succeeded") )
                     else:
                         response["success"].append( (False,"Invalid Hash") )
                 except Exception,what:
-                    print repr(what)
                     response["success"].append( (False,repr(what)) )
         elif action == "append_image":
             image_info,album_info = json.loads( request.raw_post_data )
@@ -157,10 +175,12 @@ def image(request,action,datas=None):
             del response["reason"]
             response["result"] = result
         elif action == "delete":
-            uid,delhash = json.loads( request.raw_post_data )
+            pairs = json.loads( request.raw_post_data )
+            response["success"] = []
+            for uid,delhash in pairs:
+                response["success"].append( delete_image(uid,delhash) )
             response["status"] = "ok"
             del response["reason"]
-            response["success"] = delete_image(uid,delhash)
         elif action == "append_to_album":
             image_info,album_info = json.loads( request.raw_post_data )
             response["status"] = "ok"
@@ -172,6 +192,5 @@ def image(request,action,datas=None):
             del response["reason"]
             response["success"] = remove_image_from_album(image_info,album_info)
     except Exception,what:
-        print repr(what)
         response["reason"] = repr(what)
     return response

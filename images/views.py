@@ -13,10 +13,18 @@ from models import *
 import utils
 
 from mimetypes import guess_type
-from PIL import Image as PImage
+import Image as PImage
 import StringIO
 import json
 
+#reload database decorator
+def mongodb_autoreload(func):
+    try:
+        return func
+    except Exception:
+        return func
+
+@mongodb_autoreload
 def view_image(request, path):
     """Image viewing"""
     uid,sep,ext = path.partition('.')
@@ -40,6 +48,7 @@ def view_image(request, path):
             return HttpResponse('404')
         return render_to_response("images/image.html",dict(image=image,albums=albums,urls=urls,user=request.user,height=image.height and image.height*500/image.width or 0))
 
+@mongodb_autoreload
 def view_index(request):
     """Main listing."""
     list_count = 10
@@ -57,6 +66,7 @@ def view_index(request):
 def view_search(request):
     return ''
 
+@mongodb_autoreload
 def view_album(request, path):
     """ Album listing. """
     view = request.GET.get("view","")
@@ -67,6 +77,7 @@ def view_album(request, path):
     images = album.images 
     return render_to_response("images/album.html",dict(album=album,images=images,user=request.user))
 
+@mongodb_autoreload
 @login_required
 def list_album(request):
     """ Album listing. """
@@ -78,6 +89,7 @@ def list_album(request):
             APP_SERVER=APP_SERVER,
     ))
 
+@mongodb_autoreload
 @login_required
 def list_image(request):
     """ Image listing. """
@@ -97,16 +109,26 @@ def api(request,path):
           Please only call this method under development environment
           under deployment environment, url should be dispatched to api_server services directly
     '''
-    import urllib,urllib2
+    import urllib,httplib
     try:
-        d = {}
-        for k in request.GET:
-            d[k] = request.GET.get(k)
-        if d:
-            url =  APP_SERVER+"/api/"+path+"?"+urllib.urlencode(d)
+        conn = httplib.HTTPConnection(APP_SERVER[7:])
+        #processing headers
+        def format_header_name(name):
+            return "-".join([ x[0].upper()+x[1:] for x in name[5:].lower().split("_") ])
+        headers = dict([ (format_header_name(k),v) for k,v in request.META.items() if k.startswith("HTTP_") ])
+        headers["Cookie"] = "; ".join([ k+"="+v for k,v in request.COOKIES.items()])
+        #post request
+        conn.request(
+            request.method,
+            str(request.get_full_path()),
+            request.raw_post_data,
+            headers
+        )
+        response = conn.getresponse()
+        if response.status == 200:
+            response = response.read()
         else:
-            url =  APP_SERVER+"/api/"+path
-        response = urllib.urlopen(url,data=request.raw_post_data)
+            response = { "status":"failed","code":response.status,"reason":response.reason }
     except Exception,what:
-        print repr(what)
+        print repr(what)[:200]
     return HttpResponse( response, mimetype="application/json" )

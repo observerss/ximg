@@ -31,7 +31,7 @@ class Login(Document):
 
 class Album(Document):
     uid = StringField(max_length=6,primary_key=True)
-    title = StringField(max_length=120,default="Untitled")
+    title = StringField(max_length=120,default="")
     user = ReferenceField(User)
     images = ListField(GenericReferenceField())
     #public just means searchable
@@ -66,7 +66,7 @@ class Album(Document):
 
 class Image(Document):
     uid = StringField(max_length=6,primary_key=True)
-    title = StringField(max_length=120,default="Untitled")
+    title = StringField(max_length=120,default="")
     image = FileField()
     ext = StringField(max_length=4,default="jpg")
     mime = StringField(max_length=50,default="image/jpeg")
@@ -145,7 +145,7 @@ class Log(Document):
 
 def create_thumb_and_reduce_size(img,data):
     try:
-        from PIL import Image as PImage
+        import Image as PImage
         from StringIO import StringIO
         from settings import DB_HOST,DB_PORT,DB_NAME
         import pymongo,gridfs

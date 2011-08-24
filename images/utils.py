@@ -53,7 +53,7 @@ def square_crop(im):
     return im
 
 def is_image(data):
-    from PIL import Image as PImage
+    import Image as PImage
     import StringIO
     try:
         imgbuff = StringIO.StringIO(data)

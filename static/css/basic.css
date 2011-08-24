@@ -129,3 +129,31 @@ div.panel {
    padding: 5px 18px 18px 18px;
    position: relative;
 }
+
+#tools {
+    display:block;
+    width:36px;
+    padding:5px;
+    background: none repeat scroll 0 0 #880000;
+    color:#FFFFFF;
+    text-decoration:none;
+    position:absolute;
+    top:25px;
+    right:30px;
+}
+#tool-panel {
+    display:none;
+    padding:5px;
+    background-color:#1D1411;  
+}
+.image-list {
+    float:left;
+    position:relative;
+    padding:2px;
+}
+.image-check {
+    display:none;
+    position:absolute;
+    top:2px;
+    right:2px;
+}
