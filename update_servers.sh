@@ -13,7 +13,7 @@ echo "Updating Image Servers..."
 for srv in ${IMG_SERVERS[*]}
 do
     printf "\nRsyncing files to $srv...\n"
-    rsync -avze ssh --exclude='$SETTING_FILE' "$LOCAL_PATH/" $USER@$srv:"$REMOTE_PATH/" 
+    rsync -avze ssh --exclude="$SETTING_FILE" "$LOCAL_PATH/" $USER@$srv:"$REMOTE_PATH/" 
     printf "\nRestarting remote service...\n"
     bash -c "ssh -f $USER@$srv '$RESTART_IMG'"
 done
@@ -23,7 +23,7 @@ echo "Updating App Servers..."
 for srv in ${APP_SERVERS[*]}
 do
     printf "\nRsyncing files to $srv...\n"
-    rsync -avze ssh --exclude='$SETTING_FILE' "$LOCAL_PATH/" $USER@$srv:"$REMOTE_PATH/" --exclude $SETTING_FILE
+    rsync -avze ssh --exclude="$SETTING_FILE" "$LOCAL_PATH/" $USER@$srv:"$REMOTE_PATH/"
     printf "\nRestarting remote service...\n"
     bash -c "ssh -f $USER@$srv 'cd $REMOTE_PATH;$RESTART_APP'"
 done
