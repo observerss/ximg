@@ -30,7 +30,8 @@
                         </a>
                         <div class="caption">
                             <div class="image-title" style="margin-bottom:10px" >Title: {{ img.title }}</div>
-                            <div class="button share">FB,RR,KX<a href="#">Share</a></div>
+                            <div class="button share"><a href="#">Share this Album</a></div>
+                            <div class="button download"><a href="{{ album.download_link }}">Download {{ album.uid }}.zip</a></div>
                             <div class="download"><a href="{{ img.imageurl }}">View Image</a></div>
                         </div>
                     </li>

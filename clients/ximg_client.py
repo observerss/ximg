@@ -5,8 +5,8 @@
     Usage:
         ximg = XimgClient(host,username,password)
         ximg.clone( [http://....jpg, http://....png, ...] ) # return XimgResponse
-        ximg.upload( data, format, title="" ) # return XimgResponse
         ximg.group( [uid1,uid2,...] ) # return XimgResponse
+        //ximg.upload( data, format, title="" ) # return XimgResponse
 '''
 import urllib,urllib2,cookielib
 import re
@@ -45,6 +45,8 @@ class XimgClient:
             ret.uids.append( x.get("uid","") )
             ret.urls.append( x.get("link","") )
         return ret
+
+    def group(self,
                     
 
 if __name__ == "__main__":

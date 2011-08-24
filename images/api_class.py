@@ -16,6 +16,7 @@ from images.utils import is_image,get_client_ip
 
 import json
 import utils
+from datetime import datetime
 
 def delete_image(uid,delhash):
     try:
@@ -25,6 +26,7 @@ def delete_image(uid,delhash):
             try:
                 for a in im.albums:
                     a.images.remove(im)
+                    a.edited = datetime.now()
                     a.save()
                     if not a.images:
                         a.delete()
@@ -46,6 +48,8 @@ def append_image_to_album(image_info,album_info):
         if im.delhash == i_delhash and alb.delhash == a_delhash:
             im.albums.append(alb)
             al.images.append(im)
+            im.edited = datetime.now()
+            al.edited = datetime.now()
             im.save()
             al.save()
             return True,"Succeeded"
@@ -63,6 +67,8 @@ def remove_image_from_album(image_info,album_info):
         if im.delhash == i_delhash and alb.delhash == a_delhash:
             im.albums.remove(alb)
             al.images.remove(im)
+            im.edited.datetime.now()
+            al.edited.datetime.now()
             im.save()
             al.save()
             return True,"Succeeded"
@@ -79,12 +85,13 @@ def album(request,action,args=None):
             album = Album()
             if request.user.is_authenticated():
                 album.user=request.user
-            album.save()
             images = Image.objects.filter(uid__in=ids)
             for img in images:
                 img.albums.append(album)
                 album.images.append(img)
+                img.edited = datetime.now()
                 img.save()
+            album.edited = datetime.now()
             album.save()
             response["status"] = "ok"
             del response["reason"]
@@ -113,6 +120,7 @@ def album(request,action,args=None):
                             for im in alb.images:
                                 try:
                                     im.albums.remove(alb)
+                                    im.edited = datetime.now()
                                     im.save()
                                 except:
                                     pass
@@ -143,7 +151,6 @@ def image(request,action,datas=None):
             data = request.raw_post_data
             filename = request.GET.get('qqfile','unknown.jpg')
             img = create_image(filename,data,request)
-            img.save()
             response["status"] = "ok"
             del response["reason"]
             response["result"] = { 
@@ -160,7 +167,6 @@ def image(request,action,datas=None):
                 if data:
                     filename = link.rsplit('/',1)[-1]
                     img = create_image(filename,data,request)
-                    img.save()
                     result.append({
                         "success":True,
                         "uid":img.uid,

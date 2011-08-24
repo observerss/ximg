@@ -25,6 +25,8 @@ from tornado.stack_context import StackContext
 import contextlib
 import json
 import logging
+from zipfile import ZipFile
+from StringIO import StringIO
 
 from multiprocessing import Pool
 import email.utils,datetime,time
@@ -152,6 +154,39 @@ def file_read(name,size,offset,processed,length):
         logging.error( repr(what), exc_info=True )
         return 0,''
 
+def zip_file_check(path):
+    '''
+        Check and update the zipfile if necessary
+    '''
+    import pymongo,gridfs
+    from settings import DB_HOST,DB_PORT,DB_NAME
+    try:
+        uid,dot,ext = path.partition('.')
+        alb = Album.objects.get(uid=uid)
+        if not hasattr(zip_file_check,'fs'):
+            zip_file_check.fs = gridfs.GridFS(pymongo.Connection("%s:%s"%(DB_HOST,DB_PORT))[DB_NAME])
+        try:
+            zipfile = zip_file_check.fs.get_version(filename=path)
+            if zipfile.upload_date < alb.edited:
+                raise Exception
+        except Exception,what:
+            #delete previous zipfile
+            try:
+                f = zip_file_check.fs.get_version(filename=path)
+                zip_file_check.fs.delete( f._id )
+            except Exception,what:
+                pass
+            zip_buffer = StringIO()
+            zip = ZipFile(zip_buffer,"w")
+            for im in alb.images:
+                f = zip_file_check.fs.get_version(filename="%s.%s"%(im.uid,im.ext))
+                zip.writestr( "%s.%s"%(im.uid,im.ext), f.read() )
+            zip.close()
+            zip_file_check.fs.put( zip_buffer.getvalue(), filename="%s.zip"%alb.uid, content_type="application/x-zip-compressed" )
+    except Exception,what:
+        print repr(what)
+    return path
+
 class RootHandler(BaseHandler):
     ''' 
         Read a file/image from mongodb's gridfs, asynchronously return chunks 
@@ -163,6 +198,20 @@ class RootHandler(BaseHandler):
     '''
     @tornado.web.asynchronous
     def get(self,path):
+        self._get_check(path)
+    
+    def _get_check(self,path):
+        '''
+             If requested file is an album_uid.zip file, check updates first
+             this method make an async call to zip_file_check and then triggers _get_process
+        '''
+        if path.endswith(".zip"):
+            self.p = self.application.settings.get('pool')
+            self.p.apply_async(zip_file_check,(path,),callback=self.async_callback(self._get_process))
+        else:
+            self._get_process(path)
+
+    def _get_process(self,path):
         import pymongo,gridfs
         from settings import DB_HOST,DB_PORT,DB_NAME
         name = path

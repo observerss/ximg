@@ -43,6 +43,7 @@ class Album(Document):
     tags = ListField(ReferenceField(Tag))
     comments = ListField(ReferenceField(Comment)) 
     delhash = StringField(max_length=32)
+    zipfile = FileField()
     def __init__(self, *args, **kwargs):
         """Generate uid"""
         super(Album, self).__init__(*args, **kwargs) 
@@ -56,11 +57,16 @@ class Album(Document):
                     break
             self.delhash = utils.generate_delhash(self.uid)
             self.save()
+    def delete(self):
+        delete_album_files(self)
+        Document.delete(self)
     def albumurl_medium(self):
         if self.images:
             return self.images[0].imageurl_medium()
     def albumurl(self):
         return '/a/%s' % self.uid
+    def download_link(self):
+        return APP_SERVER+"/%s.zip" % self.uid
     def __unicode__(self):
         return self.title
 
@@ -95,6 +101,9 @@ class Image(Document):
                     break
             self.delhash = utils.generate_delhash(self.uid)
             self.save()
+    def delete(self):
+        delete_image_files(self)
+        Document.delete(self)
     def save(self, *args, **kwargs):
         """Save """
         super(Image, self).save(*args, ** kwargs)
@@ -204,9 +213,30 @@ def create_image(filename,data,request):
         img.image.put(data, filename=img.uid+"."+img.ext, content_type=img.mime)
         if request.user.is_authenticated():
             img.user = request.user
+        img.edited = datetime.now()
         img.save()
     except Exception,what:
         print repr(what)
         return None
     return img
 
+
+def delete_album_files(alb):
+    delete_file(alb.uid+".zip")
+
+def delete_image_files(im):
+    delete_file(im.uid+"."+im.ext)
+    delete_file(im.uid+"s."+im.ext)
+    delete_file(im.uid+"m."+im.ext)
+
+def delete_file(filename):
+    import pymongo,gridfs
+    from settings import DB_HOST,DB_PORT,DB_NAME
+    if not hasattr(delete_file,'fs'):
+        delete_file.fs = gridfs.GridFS(pymongo.Connection("%s:%s"%(DB_HOST,DB_PORT))[DB_NAME])
+    try:
+        while True:
+            file = delete_file.fs.get_version(filename=filename)
+            delete_file.fs.delete( file._id )  
+    except:
+        pass
