@@ -11,6 +11,7 @@ urlpatterns = patterns('',
     url(r'^i/(?P<path>.*)', views.view_image ),
     url(r'^my/album$',views.list_album),
     url(r'^my/image$',views.list_image),
+    url(r'^user/(?P<name>.*)$',views.user_album),
     url(r'^api/(?P<path>.*)', views.api ),
 
     # Uncomment the admin/doc line below to enable admin documentation:

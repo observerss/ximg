@@ -77,8 +77,30 @@ class Album(Document):
             return self.images[0].imageurl_medium()
     def albumurl(self):
         return '/a/%s' % self.uid
+    def userurl(self):
+        return '/user/%s' % self.user.username
     def download_link(self):
         return APP_SERVER+"/%s.zip" % self.uid
+    def links_normal(self):
+        links = []
+        for im in self.images:
+            links.append( "%s/%s" % (WEB_SERVER,im.uid) )
+        return r'\n'.join(links)
+    def links_original(self):
+        links = []
+        for im in self.images:
+            links.append( "%s/%s.%s" % (IMG_SERVER,im.uid,im.ext) )
+        return r'\n'.join(links)
+    def links_html(self):
+        links = []
+        for im in self.images:
+            links.append( "<img src='%s/%s.%s' title='%s'/>" % (IMG_SERVER,im.uid,im.ext,im.title) )
+        return r'\n'.join(links)
+    def links_bbcode(self):
+        links = []
+        for im in self.images:
+            links.append( "[img]%s/%s.%s[/img]" % (IMG_SERVER,im.uid,im.ext) )
+        return r'\n'.join(links)
     def __unicode__(self):
         return self.title
 

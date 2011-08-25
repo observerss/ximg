@@ -1,0 +1,111 @@
+{% extends "images/pbase.html" %}
+{% block resource %}
+        <script type="text/javascript" src="/static/galleria/galleria-1.2.5.min.js"></script>
+        <script src="/static/galleria/themes/classic/galleria.classic.min.js"></script>
+{% endblock %}
+
+{% block main %}
+    <div id="container">
+        <div id="dialog-geturls" title="Share the album.">
+            <div id="radio-codetype">
+                <input type="radio" id="radio1" name="radio" /><label for="radio1">Links</label>
+                <input type="radio" id="radio2" name="radio" /><label for="radio2">Direct Links</label>
+                <input type="radio" id="radio3" name="radio" /><label for="radio3">HTML</label>
+                <input type="radio" id="radio4" name="radio" /><label for="radio4">BBS</label>
+            </div>
+            <p></p>
+            <textarea style="width:100%;"></textarea>
+        </div>
+        <div class="navigation-container">
+            <div class="info">
+                <h2>Title:{{ album.title }}</h2>
+                {% if album.user %}
+                    User: <a href="{{ album.userurl }}">{{ album.user.username }}</a>
+                {% else %}
+                    User: <a href="#">Anonymous</a>
+                {% endif %} /
+                <a id="geturls" href="#">Get Links</a> /
+                <a href="{{ album.download_link }}">Download Album</a>
+            </div>
+            <div id="gallery">
+            {% for img in images %}
+                <a href="{{ img.imageurl_original }}">
+                    <img src="{{ img.imageurl_small }}" alt="" title="{{ img.title }}">
+                </a>
+            {% endfor %}
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+    $('#gallery').galleria({
+        width:980,
+        height:600
+    });
+    $("#radio-codetype").buttonset();
+    $("#radio-codetype input[name='radio']").change(function(){
+        // update sharing code by codetype
+        if($(this).is(":checked")){
+            var links = "";
+            var choice = $(this).attr("id");
+            switch( choice ){
+                case "radio1":
+                    links = "{{ album.links_normal }}";
+                    break;
+                case "radio2":
+                    links = "{{ album.links_original }}";
+                    break;
+                case "radio3":
+                    links = "{{ album.links_html }}";
+                    break;
+                case "radio4":
+                    links = "{{ album.links_bbcode }}";
+                    break;
+            }
+            var txtarea = $("#dialog-geturls textarea");
+            txtarea.html(links);
+            txtarea.select();
+            
+            // zclip for clipboard copy) 
+            $("button:contains('Copy')").zclip({
+                path:'/static/js/ZeroClipboard.swf',
+                copy:$("#dialog-geturls").children("textarea").text(),
+                afterCopy:function(){},
+            });
+        }
+    });
+    $("#geturls").click(function(){
+        // initialize radio selection
+        $("#radio-codetype [name='radio']").attr("checked", false);
+        $("#radio-codetype #radio1").attr("checked",true);
+        $("#radio-codetype").buttonset("refresh");
+        
+        // open dialog 
+        $("#dialog-geturls").dialog("open");
+
+        var txtarea = $("#dialog-geturls textarea");
+        txtarea.html("{{ album.links_normal }}");
+        txtarea.select();
+
+        $("button:contains('Copy')").zclip({
+            path:'/static/js/ZeroClipboard.swf',
+            copy:$("#dialog-geturls").children("textarea").text(),
+            afterCopy:function(){},
+        });
+    });
+    $("#dialog-geturls").dialog({
+        autoOpen:false,
+        width:480,
+        buttons: [
+            {text: "Copy"},
+            {text: "Close",
+            click: function() { 
+                $(this).dialog("close");
+            }}
+        ],
+    });
+    </script>
+{% endblock %}

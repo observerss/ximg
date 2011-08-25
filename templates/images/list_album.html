@@ -12,6 +12,7 @@
         </div>
         <div class="container">
             <div class="gallery panel">
+                {% if is_owner %}
                 <div class="gallery-top">
                     <h2>Albums</h2>
                     <a id="tools" href="#">Tools</a>
@@ -25,6 +26,11 @@
                     <input type="button" name="edit-album" value="edit" />
                     -->
                 </div> 
+                {% else %}
+                <div class="gallery-top">
+                    <h2>Albums</h2>
+                </div>
+                {% endif %}
                 <div class="pagination">
                 {% if num_pages > 1 %}
                     {% if previous_pages %}
@@ -56,37 +62,7 @@
                 {% endfor %}
             </div>
             <div class="upload panel">
-                <h2>Upload Images</h2>
-                <div class="qq-uploader">
-                    <div class="qq-upload-button" id="webupload">
-                        From Raw Urls
-                    </div>
-                    <ul class="web-upload-list"></ul>
-                </div>
-                <div id="dialog-webupload" title="Enter URLS of images, one per line.">
-                    <textarea name="urls" rows="10" style="width:100%"></textarea>
-                </div>
-                <div id="dialog-geturls" title="Share the images.">
-                    <div id="radio-codetype">
-                        <input type="radio" id="radio1" name="radio" /><label for="radio1">Links</label>
-                        <input type="radio" id="radio2" name="radio" /><label for="radio2">Direct Links</label>
-                        <input type="radio" id="radio3" name="radio" /><label for="radio3">HTML</label>
-                        <input type="radio" id="radio4" name="radio" /><label for="radio4">BBS</label>
-                    </div>
-                    <p></p>
-                    <textarea style="width:100%;">This dialog is for share</textarea>
-                </div>
-                <div id="file-uploader">
-                    <noscript>
-                        <p>Please enable JavaScript to use file uploader.</p>
-                        <!-- or put a simple form for upload here -->
-                    </noscript>
-                </div>
-                <div id="options">
-                    <input type="checkbox" name="select all" />
-                    <button class="options" id="makealbum">Make Album</button>
-                    <button class="options" id="geturls">Share</button>
-                </div>
+                <h2>TBD</h2>
             </div>
         </div>
     </div>

@@ -80,17 +80,12 @@ def view_album(request, path):
     if not album.public and not request.user.is_authenticated():
         return HttpResponse("Error: you need to be logged in to view this album.")
     images = album.images 
-    return render_to_response("images/album.html",dict(album=album,images=images,user=request.user))
+    return render_to_response("images/album2.html",dict(album=album,images=images,user=request.user))
 
-@mongodb_autoreload
-@login_required
-def list_album(request):
-    """ Album listing. """
+def render_album_list(request,albums,is_owner=True):
     page = request.GET.get("page",1)
     try: page = int(page) 
     except: page = 1
-
-    albums = Album.objects.filter(user=request.user).order_by("-created")
 
     page_size = 20
     image_count = albums.count()
@@ -112,6 +107,7 @@ def list_album(request):
     album_list = [ x for x in albums[(page-1)*page_size:page*page_size] ]
     return render_to_response("images/list_album.html",
         dict(album_list=album_list,
+            is_owner = is_owner,
             user=request.user,
             num_pages=num_pages,
             current_page = current_page,
@@ -120,6 +116,22 @@ def list_album(request):
             next_pages = next_pages,
             next_page = next_page,
     ))
+
+@mongodb_autoreload
+def user_album(request,name):
+    try:
+        user = User.objects.get(username=name)
+    except:
+        return HttpResponse("404")
+    albums = Album.objects.filter(user=user,public=True).order_by("-created")
+    return render_album_list(request,albums,False)
+
+@mongodb_autoreload
+@login_required
+def list_album(request):
+    """ Album listing. """
+    albums = Album.objects.filter(user=request.user).order_by("-created")
+    return render_album_list(request,albums)
 
 @mongodb_autoreload
 @login_required
