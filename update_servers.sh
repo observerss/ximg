@@ -1,13 +1,14 @@
 #!/bin/bash 
 USER="root"
 LOCAL_PATH="/var/www/ximg-mongo"
-SETTING_FILE="settings.py"
+SETTING_FILE=""
+#settings.py"
 REMOTE_PATH="/var/www/ximg-mongo"
 RESTART_IMG="$REMOTE_PATH/images/restart.sh" 
 RESTART_APP="$REMOTE_PATH/restart.sh" 
 APP_SERVERS=("hub.obmem.info" "app1.ximg.in" "app2.ximg.in")
-IMG_SERVERS=()
-#IMG_SERVERS=("i1.ximg.in" "i2.ximg.in" "i3.ximg.in" "i4.ximg.in")
+#IMG_SERVERS=()
+IMG_SERVERS=("i1.ximg.in" "i2.ximg.in" "i3.ximg.in" "i4.ximg.in")
 
 # update files to IMG_SERVERS
 echo "Updating Image Servers..."

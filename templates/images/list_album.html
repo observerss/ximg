@@ -25,10 +25,31 @@
                     <input type="button" name="edit-album" value="edit" />
                     -->
                 </div> 
-                {% for alb in albums %}
+                <div class="pagination">
+                {% if num_pages > 1 %}
+                    {% if previous_pages %}
+                        <a href="?page={{ previous_page }}">&lt;&lt;previous</a>
+                        {% for page in previous_pages %}
+                            <a href="?page={{ page }}">{{ page }}</a>
+                        {% endfor %}
+                    {% else %}
+                        &lt;&lt;previous
+                    {% endif %}
+                    <span class="current">{{ current_page }}</span>
+                    {% if next_pages %}
+                        {% for page in next_pages %}
+                            <a href="?page={{ page }}">{{ page }}</a>
+                        {% endfor %}
+                        <a href="?page={{ next_page }}">next&gt;&gt;</a>
+                    {% else %}
+                        next&gt;&gt;
+                    {% endif %}
+                {% endif %}
+                </div>
+                {% for alb in album_list %}
                     <div class="image-list">
                         <a class="image-link" name="{{ alb.uid }}" href="{{ alb.albumurl }}">
-                            <img border="0" alt="" src="{{ alb.cover }}" title="{{ alb.title }}" width="100px"/>
+                            <img border="0" alt="" src="{{ alb.coverurl }}" title="{{ alb.title }}" width="100px"/>
                         </a>
                         <input type="checkbox" class="image-check" name="{{ alb.uid }}" delhash="{{ alb.delhash }}" />
                     </div>

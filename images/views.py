@@ -8,6 +8,7 @@ from django.forms import ModelForm
 from django.db.models import Q
 from settings import MEDIA_URL,MEDIA_ROOT,STATIC_URL,STATIC_ROOT,APP_SERVER,IMG_SERVER
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from models import *
 import utils
@@ -85,24 +86,78 @@ def view_album(request, path):
 @login_required
 def list_album(request):
     """ Album listing. """
+    page = request.GET.get("page",1)
+    try: page = int(page) 
+    except: page = 1
+
     albums = Album.objects.filter(user=request.user).order_by("-created")
-    albums = [ {"uid":x.uid,"title":x.title,"delhash":x.delhash,"albumurl":x.albumurl(),"cover":x.coverurl} for x in albums[:10] ]
+
+    page_size = 20
+    image_count = albums.count()
+    num_pages = max(1, (image_count-1)/page_size+1 )
+    page = min(page,num_pages)
+    page = max(1,page)
+    current_page = page
+    previous_pages = [ x for x in [page-3,page-2,page-1] if x>=1 ]
+    if previous_pages:
+        previous_page = previous_pages[-1]
+    else:
+        previous_page = 0
+    next_pages = [ x for x in [page+1,page+2,page+3] if x<=num_pages ]
+    if next_pages:
+        next_page = next_pages[0]
+    else:
+        next_page = 0
+
+    album_list = [ x for x in albums[(page-1)*page_size:page*page_size] ]
     return render_to_response("images/list_album.html",
-        dict(albums=albums,
+        dict(album_list=album_list,
             user=request.user,
-            APP_SERVER=APP_SERVER,
+            num_pages=num_pages,
+            current_page = current_page,
+            previous_pages = previous_pages,
+            previous_page = previous_page,
+            next_pages = next_pages,
+            next_page = next_page,
     ))
 
 @mongodb_autoreload
 @login_required
 def list_image(request):
     """ Image listing. """
+    page = request.GET.get("page",1)
+    try: page = int(page) 
+    except: page = 1
+
     images = Image.objects.filter(user=request.user).order_by("-created")
-    images = [ x for x in images[:20] ]
+
+    page_size = 20
+    image_count = images.count()
+    num_pages = max(1, (image_count-1)/page_size+1 )
+    page = min(page,num_pages)
+    page = max(1,page)
+    current_page = page
+    previous_pages = [ x for x in [page-3,page-2,page-1] if x>=1 ]
+    if previous_pages:
+        previous_page = previous_pages[-1]
+    else:
+        previous_page = 0
+    next_pages = [ x for x in [page+1,page+2,page+3] if x<=num_pages ]
+    if next_pages:
+        next_page = next_pages[0]
+    else:
+        next_page = 0
+
+    image_list = [ x for x in images[(page-1)*page_size:page*page_size] ]
     return render_to_response("images/list_image.html",
-        dict(images=images,
+        dict(num_pages=num_pages,
+            current_page = current_page,
+            previous_pages = previous_pages,
+            previous_page = previous_page,
+            next_pages = next_pages,
+            next_page = next_page,
+            image_list=image_list,
             user=request.user,
-            APP_SERVER=APP_SERVER,
     ))
 
 @csrf_exempt
