@@ -28,7 +28,7 @@
                 {% for alb in albums %}
                     <div class="image-list">
                         <a class="image-link" name="{{ alb.uid }}" href="{{ alb.albumurl }}">
-                            <img border="0" alt="" src="{{ alb.albumurl_medium }}" title="{{ alb.title }}" width="100px"/>
+                            <img border="0" alt="" src="{{ alb.cover }}" title="{{ alb.title }}" width="100px"/>
                         </a>
                         <input type="checkbox" class="image-check" name="{{ alb.uid }}" delhash="{{ alb.delhash }}" />
                     </div>

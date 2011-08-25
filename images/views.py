@@ -19,10 +19,14 @@ import json
 
 #reload database decorator
 def mongodb_autoreload(func):
-    try:
-        return func
-    except Exception:
-        return func
+    count = 5
+    while count>=0:
+        try:
+            count -= 1
+            return func
+        except Exception:
+            import time
+            time.sleep(1)
 
 @mongodb_autoreload
 def view_image(request, path):
@@ -81,8 +85,8 @@ def view_album(request, path):
 @login_required
 def list_album(request):
     """ Album listing. """
-    albums = Album.objects(user=request.user).order_by("-created")
-    albums = [ x for x in albums[:200] ]
+    albums = Album.objects.filter(user=request.user).order_by("-created")
+    albums = [ {"uid":x.uid,"title":x.title,"delhash":x.delhash,"albumurl":x.albumurl(),"cover":x.coverurl} for x in albums[:10] ]
     return render_to_response("images/list_album.html",
         dict(albums=albums,
             user=request.user,
@@ -93,8 +97,8 @@ def list_album(request):
 @login_required
 def list_image(request):
     """ Image listing. """
-    images = Image.objects(user=request.user).order_by("-created")
-    images = [ x for x in images[:200] ]
+    images = Image.objects.filter(user=request.user).order_by("-created")
+    images = [ x for x in images[:20] ]
     return render_to_response("images/list_image.html",
         dict(images=images,
             user=request.user,

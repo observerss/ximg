@@ -37,20 +37,39 @@ class XimgClient:
     def clone(self,image_links):
         if type(image_links) == str:
             image_links = [ image_links ]
-        data = json.dumps(image_links) 
+        if image_links == []:
+            return XimgResponse()
+        data = json.dumps(image_links)
         response = self.opener.open("http://%s/api/image/weblink"%self.host, data=data)
         ret = XimgResponse()
         d = json.loads(response.read())
         for x in d["result"]:
             ret.uids.append( x.get("uid","") )
-            ret.urls.append( x.get("link","") )
+            ret.urls.append( "http://i.ximg.in/"+x.get("uid","")+"."+x.get("ext","") )
         return ret
 
-    def group(self,
+    def group(self,uids,title=None):
+        if type(uids) == str:
+            uids = [ uids ]
+        data = json.dumps(uids)
+        response = self.opener.open("http://%s/api/album/create"%self.host, data=data)
+        ret = XimgResponse()
+        d = json.loads(response.read())
+        ret.uids.append( d["result"].get("aid","") )
+        ret.urls.append( d["result"].get("link","") )
+        if title:
+            self.album_title(ret.uids[0],title)
+        return ret
                     
+    def album_title(self,uid,title):
+        data = json.dumps( { "uid":uid, "title":title } )
+        response = self.opener.open("http://%s/api/album/title"%self.host, data=data)
+        ret = XimgResponse()
+        return ret
 
 if __name__ == "__main__":
-    ximg = XimgClient("ximg.in","tgsk","tgsk")
-    ret = ximg.clone(["http://ximg.in/static/logo-large.gif"])
+    ximg = XimgClient("localhost:8000","tgsk","tgsk")
+    ret = ximg.clone(["http://ximg.in/static/logo-large.gif","http://ximg.in/static/logo-large.gif"])
+    ret = ximg.group(ret.uids,title="haha")
     print ret.uids,ret.urls
 

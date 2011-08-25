@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#coding:utf-8
 import os,sys
 try:
     os.environ["DJANGO_SETTINGS_MODULE"]
@@ -97,6 +98,8 @@ class AlbumHandler(BaseHandler):
             except:
                 args = None
             self.write(api_class.album(request,action,args))
+        elif action == "title":
+            self.write(api_class.album(request,action))
 
 class ImageHandler(BaseHandler):#tornado.web.RequestHandler):
     @tornado.web.asynchronous
@@ -125,8 +128,7 @@ class ImageHandler(BaseHandler):#tornado.web.RequestHandler):
         self.links = self.links[1:]
         if len(self.links)>=1:
             http = tornado.httpclient.AsyncHTTPClient()
-            with StackContext(die_on_error):
-                http.fetch(self.links[0],callback=self.on_response)
+            http.fetch(self.links[0],callback=self.on_response)
         else:
             request = self.get_django_request()
             response = api_class.image(request,self.action,self.data)

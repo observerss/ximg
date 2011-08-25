@@ -34,6 +34,7 @@ class Album(Document):
     title = StringField(max_length=120,default="")
     user = ReferenceField(User)
     images = ListField(GenericReferenceField())
+    coverurl = StringField(max_length=120,default="")
     #public just means searchable
     public = BooleanField(default=True)
     created = DateTimeField(default=datetime.now)
@@ -44,6 +45,9 @@ class Album(Document):
     comments = ListField(ReferenceField(Comment)) 
     delhash = StringField(max_length=32)
     zipfile = FileField()
+    meta = {
+        'indexes': ['-created', ('user','-created')]
+    }
     def __init__(self, *args, **kwargs):
         """Generate uid"""
         super(Album, self).__init__(*args, **kwargs) 
@@ -57,6 +61,14 @@ class Album(Document):
                     break
             self.delhash = utils.generate_delhash(self.uid)
             self.save()
+    def save(self, *args, **kwargs):
+        """Save """
+        self.edited = datetime.now()
+        try:
+            self.coverurl = self.images[0].imageurl_medium()
+        except:
+            pass
+        super(Album, self).save(*args, ** kwargs)
     def delete(self):
         delete_album_files(self)
         Document.delete(self)
@@ -89,6 +101,9 @@ class Image(Document):
     ip = StringField(max_length=16)
     public = BooleanField(default=True)
     delhash = StringField(max_length=32)
+    meta = {
+        'indexes': ['-created', ('user','-created')]
+    }
     def __init__(self, *args, **kwargs):
         """Generate uid"""
         super(Image, self).__init__(*args, **kwargs) 
@@ -106,10 +121,7 @@ class Image(Document):
         Document.delete(self)
     def save(self, *args, **kwargs):
         """Save """
-        super(Image, self).save(*args, ** kwargs)
-        # call image save api @IMG_SERVER
-        # IMG_SERVER is responsible for generating the thumbnails
-        pass
+        self.edited = datetime.now()
         super(Image, self).save(*args, ** kwargs)
     def imageurl_original(self):
         return self.imageurl('original')
